@@ -221,11 +221,11 @@ namespace ZeDarkSide_Discord_Bot.Commands
         {
             try
             {
-                // Join the item arguments into a single string representing the item name and convert to lowercase
+                
                 string item = string.Join(" ", itemArgs).ToLower();
                 Console.WriteLine($"User {ctx.User.Username} wants to buy {item}.");
 
-                // Check if the item is available in the shop (case-insensitive)
+                
                 KeyValuePair<string, int> matchingItem = shopItems.FirstOrDefault(x => x.Key.ToLower() == item);
                 if (matchingItem.Key == null)
                 {
@@ -239,7 +239,7 @@ namespace ZeDarkSide_Discord_Bot.Commands
                 ulong userId = ctx.User.Id;
                 int userPoints = 0;
 
-                // Load user data from UserData JSON file
+                
                 string userDataFilePath = "UserData.json";
                 var userData = new Dictionary<ulong, List<string>>();
 
@@ -249,7 +249,7 @@ namespace ZeDarkSide_Discord_Bot.Commands
                     userData = JsonConvert.DeserializeObject<Dictionary<ulong, List<string>>>(jsonData) ?? new Dictionary<ulong, List<string>>();
                 }
 
-                // Check if the user already owns the item
+                
                 if (userData.ContainsKey(userId) && userData[userId].Any(x => x.Equals(item, StringComparison.OrdinalIgnoreCase)))
                 {
                     Console.WriteLine($"User {ctx.User.Username} already owns {item}.");
@@ -257,7 +257,7 @@ namespace ZeDarkSide_Discord_Bot.Commands
                     return;
                 }
 
-                // Load user points from Bank JSON file
+              
                 string bankFilePath = "Bank.json";
                 var bankData = new JSONStructure();
 
@@ -272,10 +272,10 @@ namespace ZeDarkSide_Discord_Bot.Commands
                     userPoints = bankData.UserPoints[userId];
                 }
 
-                // Get the price of the item
+                
                 int itemPrice = matchingItem.Value;
 
-                // Check if the user has enough points to buy the item
+               
                 if (userPoints < itemPrice)
                 {
                     Console.WriteLine($"User {ctx.User.Username} does not have enough points to buy {item}.");
@@ -283,10 +283,10 @@ namespace ZeDarkSide_Discord_Bot.Commands
                     return;
                 }
 
-                // Deduct points from user
+               
                 userPoints -= itemPrice;
 
-                // Add item to user's inventory
+              
                 if (!userData.ContainsKey(userId))
                 {
                     userData[userId] = new List<string>();
@@ -296,11 +296,11 @@ namespace ZeDarkSide_Discord_Bot.Commands
 
                 Console.WriteLine($"User {ctx.User.Username} has successfully bought {item}.");
 
-                // Save updated user data to UserData JSON file
+                
                 string updatedUserData = JsonConvert.SerializeObject(userData);
                 File.WriteAllText(userDataFilePath, updatedUserData);
 
-                // Update user points in Bank JSON file
+              
                 bankData.UserPoints[userId] = userPoints;
                 string updatedBankJsonData = JsonConvert.SerializeObject(bankData);
                 File.WriteAllText(bankFilePath, updatedBankJsonData);
@@ -316,22 +316,21 @@ namespace ZeDarkSide_Discord_Bot.Commands
         [Command("modshop")]
         public async Task ModifyShop(CommandContext ctx, params string[] itemsAndPrices)
         {
-            ulong permittedUserId = 653805970610192394; // Replace with your user ID
-
-            // Check if the command invoker is the permitted user
+            ulong permittedUserId = 653805970610192394; 
+           
             if (ctx.User.Id != permittedUserId)
             {
                 await ctx.RespondAsync("You do not have permission to use this command.");
                 return;
             }
 
-            // Clear the existing shop items
+         
             shopItems.Clear();
 
-            // Parse the new items and prices
+          
             foreach (var itemAndPrice in itemsAndPrices)
             {
-                // Split the item and price by ":"
+          
                 string[] parts = itemAndPrice.Split(':');
                 if (parts.Length != 2)
                 {
@@ -339,27 +338,27 @@ namespace ZeDarkSide_Discord_Bot.Commands
                     return;
                 }
 
-                string itemName = parts[0].Trim(); // Trim leading and trailing whitespace
+                string itemName = parts[0].Trim();
                 string priceStr = parts[1];
 
-                // Validate item name
+                
                 if (string.IsNullOrWhiteSpace(itemName))
                 {
                     await ctx.RespondAsync("Item name cannot be empty.");
                     return;
                 }
 
-                // Replace hyphens with spaces
+      
                 string item = itemName.Replace("-", " ");
 
-                // Validate price
+             
                 if (!int.TryParse(priceStr, out int price))
                 {
                     await ctx.RespondAsync($"Invalid price for item: {item}. Price must be a number.");
                     return;
                 }
 
-                // Add the item to the shop
+             
                 shopItems[item] = price;
             }
 
@@ -434,7 +433,7 @@ namespace ZeDarkSide_Discord_Bot.Commands
 
             data.UserPoints[userId] += 1000;
             userPoints = data.UserPoints[userId];
-            lastDailyUse[userId] = DateTime.Now; // Record the time of daily usage
+            lastDailyUse[userId] = DateTime.Now;
             string updatedJsonData = JsonConvert.SerializeObject(data);
             File.WriteAllText(filePath, updatedJsonData);
 
@@ -451,3 +450,4 @@ namespace ZeDarkSide_Discord_Bot.Commands
 
     }
 }
+
